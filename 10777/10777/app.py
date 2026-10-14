@@ -17,6 +17,13 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+try:
+    import plotly.express as px
+    import plotly.graph_objects as go
+    HAS_PLOTLY = True
+except ImportError:
+    HAS_PLOTLY = False
+
 # ==========================================
 # 0. 網頁基本配置與電競科技風視覺樣式 (CSS)
 # ==========================================
@@ -324,18 +331,50 @@ CUSTOM_CSS = """
         color: #f1f5f9 !important;
     }
 
-    /* 下拉選單彈出視窗（Selectbox Popover）選項黑底白字高對比 */
+    /* 下拉選單本體與彈出選單（Selectbox & Popover）全面深色杜絕反白 (Image 3) */
+    div[data-baseweb="select"],
+    div[data-baseweb="select"] > div,
+    [data-testid="stSelectbox"] > div > div {
+        background-color: #1e293b !important;
+        background: #1e293b !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 8px !important;
+        color: #ffffff !important;
+    }
+    div[data-baseweb="select"] *,
+    [data-testid="stSelectbox"] * {
+        color: #ffffff !important;
+    }
+    div[data-baseweb="select"] svg {
+        fill: #38bdf8 !important;
+    }
+
     [data-baseweb="popover"],
+    [data-baseweb="popover"] > div,
     [data-baseweb="popover"] ul,
-    [data-baseweb="menu"] {
+    [data-baseweb="menu"],
+    div[data-baseweb="menu"],
+    ul[role="listbox"],
+    div[role="listbox"] {
         background-color: #0f172a !important;
+        background: #0f172a !important;
+        border: 1px solid rgba(56, 189, 248, 0.4) !important;
+        border-radius: 10px !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85) !important;
     }
     [data-baseweb="popover"] li,
-    [data-baseweb="popover"] li * {
+    [data-baseweb="popover"] li *,
+    li[role="option"],
+    li[role="option"] * {
+        background-color: transparent !important;
+        background: transparent !important;
         color: #f8fafc !important;
     }
-    [data-baseweb="popover"] li:hover {
+    [data-baseweb="popover"] li:hover,
+    li[role="option"]:hover,
+    li[role="option"][aria-selected="true"] {
         background-color: #1e293b !important;
+        background: #1e293b !important;
         color: #38bdf8 !important;
     }
 
@@ -401,11 +440,70 @@ CUSTOM_CSS = """
         box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6) !important;
     }
 
-    /* 資料表格高對比 */
-    [data-testid="stDataFrame"] {
-        background-color: rgba(15, 23, 42, 0.75) !important;
-        border-radius: 10px !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    /* ==========================================
+       重點修復三：徹底深色化浮動工具列、資料表格與圖表外框
+       (徹底消除 Image 1 & Image 2 紅圈標記之白底反白膠囊)
+       ========================================== */
+    [data-testid="stElementToolbar"],
+    div[data-testid="stElementToolbar"],
+    .stElementToolbar {
+        background-color: #0f172a !important;
+        background: #0f172a !important;
+        border: 1px solid rgba(56, 189, 248, 0.45) !important;
+        border-radius: 9999px !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.75) !important;
+        color: #f1f5f9 !important;
+    }
+    [data-testid="stElementToolbar"] button,
+    div[data-testid="stElementToolbar"] button,
+    [data-testid="stElementToolbarButton"],
+    button[data-testid="stElementToolbarButton"] {
+        background-color: transparent !important;
+        background: transparent !important;
+        border: none !important;
+        color: #f1f5f9 !important;
+        border-radius: 9999px !important;
+    }
+    [data-testid="stElementToolbar"] button:hover,
+    div[data-testid="stElementToolbar"] button:hover,
+    [data-testid="stElementToolbarButton"]:hover,
+    button[data-testid="stElementToolbarButton"]:hover {
+        background-color: #1e293b !important;
+        background: #1e293b !important;
+        color: #38bdf8 !important;
+    }
+    [data-testid="stElementToolbar"] svg,
+    div[data-testid="stElementToolbar"] svg,
+    [data-testid="stElementToolbarButton"] svg,
+    button[data-testid="stElementToolbarButton"] svg {
+        fill: #f1f5f9 !important;
+        stroke: #f1f5f9 !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* 資料表格 (stDataFrame) 全面深色高對比 (Image 2) */
+    [data-testid="stDataFrame"],
+    div[data-testid="stDataFrame"],
+    .stDataFrame {
+        background-color: rgba(15, 23, 42, 0.85) !important;
+        background: rgba(15, 23, 42, 0.85) !important;
+        border-radius: 12px !important;
+        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+        overflow: hidden !important;
+    }
+
+    /* 圖表容器深色卡片包裝 (Image 1) */
+    [data-testid="stVegaLiteChart"],
+    div[data-testid="stVegaLiteChart"],
+    [data-testid="stPlotlyChart"],
+    div[data-testid="stPlotlyChart"] {
+        background-color: rgba(15, 23, 42, 0.8) !important;
+        background: rgba(15, 23, 42, 0.8) !important;
+        border-radius: 12px !important;
+        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        padding: 8px !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
     }
 
     /* 風險燈號專用標籤樣式 (保持鮮明對比) */
@@ -488,11 +586,11 @@ CUSTOM_CSS = """
 """
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 
-# 電腦周邊受檢類別清單（嚴格限定：鍵盤、滑鼠、耳機，已依需求移除「電競」兩字）
+# 電腦周邊受檢類別清單（嚴格限定：鍵盤、滑鼠、耳機）
 PERIPHERAL_CATEGORIES = [
     "⌨️ 機械/薄膜鍵盤",
-    "🖱️ 辦公滑鼠",
-    "🎧 降噪耳機"
+    "🖱️ 滑鼠",
+    "🎧 耳機"
 ]
 
 # ==========================================
@@ -572,7 +670,7 @@ def init_db():
     # 為歷史舊資料補上預設展示用電子郵件
     c.execute("UPDATE return_requests SET customer_email = 'buyer_sample@example.com' WHERE customer_email IS NULL OR customer_email = ''")
 
-    # 自動遷移舊版資料庫中的非周邊資料，並全數移除「電競」字眼
+    # 自動遷移舊版資料庫中的非周邊資料，並全數統一為三大周邊標準品類
     c.execute("""
         UPDATE return_requests 
         SET product_category = '⌨️ 機械/薄膜鍵盤',
@@ -583,9 +681,9 @@ def init_db():
             ai_recommendation = '高風險人為損毀，建議【駁回申請】並提供自費維修報價'
         WHERE product_category LIKE '%平板%' OR product_category LIKE '%手機%'
     """)
-    c.execute("UPDATE return_requests SET product_category = '🎧 降噪耳機' WHERE product_category LIKE '%耳機%'")
+    c.execute("UPDATE return_requests SET product_category = '🎧 耳機' WHERE product_category LIKE '%耳機%'")
     c.execute("UPDATE return_requests SET product_category = '⌨️ 機械/薄膜鍵盤' WHERE product_category LIKE '%鍵盤%'")
-    c.execute("UPDATE return_requests SET product_category = '🖱️ 辦公滑鼠' WHERE product_category LIKE '%滑鼠%'")
+    c.execute("UPDATE return_requests SET product_category = '🖱️ 滑鼠' WHERE product_category LIKE '%滑鼠%'")
     conn.commit()
     
     # 檢查是否需要預設展示資料
@@ -602,7 +700,7 @@ def seed_sample_data(cursor):
     """
     sample_cases = [
         (
-            "ORD-PERI-8821", "buyer.service88@gmail.com", "🎧 降噪耳機", "7.1聲道雙模無線降噪耳機",
+            "ORD-PERI-8821", "buyer.service88@gmail.com", "🎧 耳機", "7.1聲道雙模無線降噪耳機",
             "剛開箱充電整晚完全無法開機，電源指示燈完全不亮，插線亦無任何聲音輸出。",
             None, "已通過", "綠燈", 15,
             "電源迴路故障 / 出廠新品不良 (DOA)",
@@ -629,7 +727,7 @@ def seed_sample_data(cursor):
             "", "2026-10-07 09:10:00", None
         ),
         (
-            "ORD-PERI-9302", "office.worker93@gmail.com", "🖱️ 辦公滑鼠", "PAW3395 輕量化無線滑鼠",
+            "ORD-PERI-9302", "office.worker93@gmail.com", "🖱️ 滑鼠", "PAW3395 輕量化無線滑鼠",
             "使用第三天左鍵微動開關嚴重雙擊連點（按一下變兩下），且滾輪下滾時偶爾向上跳動。",
             None, "待審核", "綠燈", 22,
             "微動開關彈片耗損與滾輪編碼器信號跳動",
@@ -852,7 +950,7 @@ def analyze_return_request(category, product_name, reason, image_file, api_key="
             from google import genai
             client = genai.Client(api_key=api_key)
             prompt = f"""
-            你是一位專精於「電腦周邊（機械/薄膜鍵盤、辦公滑鼠、降噪耳機）」售後退換貨與爭議防詐風控的資深專家。
+            你是一位專精於「電腦周邊（機械/薄膜鍵盤、滑鼠、耳機）」售後退換貨與爭議防詐風控的資深專家。
             檢測範圍嚴格限定於電腦周邊三大品類：鍵盤、滑鼠、耳機。
             
             請根據買家提供的退貨資訊進行嚴謹審查：
@@ -934,8 +1032,8 @@ menu = st.sidebar.radio(
 st.sidebar.info("""
 **🎯 檢測對象聚焦：**
 - ⌨️ **機械/薄膜鍵盤** (軸體/鍵位/PCB)
-- 🖱️ **辦公滑鼠** (微動/編碼器/感應器)
-- 🎧 **降噪耳機** (單元/頭樑/收音)
+- 🖱️ **滑鼠** (微動/編碼器/感應器)
+- 🎧 **耳機** (單元/頭樑/收音)
 
 ---
 🛡️ **前後台分離架構說明**：
@@ -1183,13 +1281,44 @@ elif menu == "📊 老闆：BI 營運成效儀表板":
         st.subheader("📌 案件風險燈號分佈")
         risk_counts = df['risk_level'].value_counts().reset_index()
         risk_counts.columns = ['風險等級', '案件數量']
-        st.bar_chart(risk_counts.set_index('風險等級'), color="#38bdf8")
+        if HAS_PLOTLY:
+            color_map = {
+                "綠燈": "#22c55e",
+                "黃燈": "#eab308",
+                "紅燈": "#ef4444"
+            }
+            fig_risk = px.bar(
+                risk_counts,
+                x='風險等級',
+                y='案件數量',
+                color='風險等級',
+                color_discrete_map=color_map,
+                text='案件數量'
+            )
+            fig_risk.update_layout(
+                template='plotly_dark',
+                plot_bgcolor='rgba(15, 23, 42, 0.75)',
+                paper_bgcolor='rgba(15, 23, 42, 0.75)',
+                margin=dict(l=20, r=20, t=25, b=20),
+                showlegend=False,
+                font=dict(color="#f1f5f9", size=13),
+                xaxis=dict(gridcolor='rgba(255,255,255,0.06)', title=''),
+                yaxis=dict(gridcolor='rgba(255,255,255,0.06)', title='案件數量')
+            )
+            fig_risk.update_traces(
+                textposition='outside',
+                textfont=dict(color='#ffffff', size=13),
+                marker=dict(line=dict(width=1, color='rgba(255,255,255,0.2)'))
+            )
+            st.plotly_chart(fig_risk, use_container_width=True, config={'displayModeBar': False})
+        else:
+            st.bar_chart(risk_counts.set_index('風險等級'), color="#38bdf8")
 
     with chart_c2:
         st.subheader("🔍 電腦周邊品類退貨佔比")
         cat_counts = df['product_category'].value_counts().reset_index()
         cat_counts.columns = ['周邊品類', '退貨件數']
-        st.dataframe(cat_counts, use_container_width=True)
+        st.dataframe(cat_counts, use_container_width=True, hide_index=True)
 
     st.markdown("---")
     st.subheader("💡 電腦周邊電商專業學術與商業價值剖析")
