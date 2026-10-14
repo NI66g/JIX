@@ -113,18 +113,31 @@ CUSTOM_CSS = """
         line-height: 1.5 !important;
     }
 
-    /* 輸入表單本體（打字文字白色、暗色質感背景、明亮對比） */
+    /* 輸入表單本體（打字文字白色、深黑科技背景、全面覆蓋 BaseWeb 杜絕反白） */
+    .stTextInput input,
+    .stTextArea textarea,
+    [data-testid="stTextInput"] input,
+    [data-testid="stTextArea"] textarea,
+    [data-baseweb="input"] input,
+    [data-baseweb="base-input"] input,
+    [data-baseweb="textarea"] textarea,
+    [data-baseweb="input"],
+    [data-baseweb="textarea"],
+    [data-baseweb="base-input"],
     .stTextInput > div > div > input, 
     .stTextArea > div > div > textarea,
     .stSelectbox > div > div > div {
-        background-color: rgba(15, 23, 42, 0.8) !important;
-        border: 1px solid rgba(255, 255, 255, 0.18) !important;
+        background-color: #1e293b !important;
+        background: #1e293b !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 8px !important;
         color: #ffffff !important;
         font-size: 14.5px !important;
     }
-    .stTextInput > div > div > input:focus, 
-    .stTextArea > div > div > textarea:focus {
+    .stTextInput input:focus, 
+    .stTextArea textarea:focus,
+    [data-testid="stTextInput"] input:focus,
+    [data-testid="stTextArea"] textarea:focus {
         border-color: #38bdf8 !important;
         box-shadow: 0 0 14px rgba(56, 189, 248, 0.4) !important;
     }
@@ -268,33 +281,47 @@ CUSTOM_CSS = """
         font-weight: 800 !important;
     }
 
-    /* 摺疊審核清單 (stExpander) 美化與文字高對比 */
-    [data-testid="stExpander"] {
-        background: rgba(15, 23, 42, 0.65) !important;
-        border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    /* 摺疊審核清單 (stExpander) 徹底杜絕反白變白條 */
+    [data-testid="stExpander"],
+    [data-testid="stExpander"] details {
+        background-color: rgba(15, 23, 42, 0.85) !important;
+        background: rgba(15, 23, 42, 0.85) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
         border-radius: 12px !important;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
-        backdrop-filter: blur(10px) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
         margin-bottom: 14px !important;
+        overflow: hidden !important;
     }
+    [data-testid="stExpander"] summary,
+    [data-testid="stExpander"] details summary,
     .streamlit-expanderHeader {
-        background: rgba(30, 41, 59, 0.65) !important;
+        background-color: #1e293b !important;
+        background: #1e293b !important;
         border-radius: 10px !important;
         color: #ffffff !important;
         font-weight: 600 !important;
         transition: all 0.2s ease !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
     }
+    [data-testid="stExpander"] summary:hover,
+    [data-testid="stExpander"] details summary:hover,
     .streamlit-expanderHeader:hover {
-        background: rgba(51, 65, 85, 0.75) !important;
-        color: #60a5fa !important;
+        background-color: #334155 !important;
+        background: #334155 !important;
+        color: #38bdf8 !important;
     }
+    [data-testid="stExpander"] summary *,
+    [data-testid="stExpander"] details summary *,
+    .streamlit-expanderHeader *,
     [data-testid="stExpander"] p,
     [data-testid="stExpander"] span,
     [data-testid="stExpander"] div {
-        color: #f1f5f9;
+        color: #f1f5f9 !important;
     }
-    [data-testid="stExpander"] strong {
-        color: #ffffff !important;
+    [data-testid="stExpander"] [data-testid="stExpanderDetails"] {
+        background-color: rgba(15, 23, 42, 0.95) !important;
+        background: rgba(15, 23, 42, 0.95) !important;
+        color: #f1f5f9 !important;
     }
 
     /* 下拉選單彈出視窗（Selectbox Popover）選項黑底白字高對比 */
@@ -312,30 +339,64 @@ CUSTOM_CSS = """
         color: #38bdf8 !important;
     }
 
-    /* 檔案上傳器拖曳區文字與按鈕亮色 */
-    [data-testid="stFileUploader"] section {
-        background-color: rgba(15, 23, 42, 0.6) !important;
-        border: 1px dashed rgba(255, 255, 255, 0.25) !important;
+    /* 檔案上傳器拖曳區文字與按鈕亮色，全面杜絕白底 */
+    [data-testid="stFileUploader"],
+    [data-testid="stFileUploader"] section,
+    [data-testid="stFileUploaderDropzone"],
+    div[data-testid="stFileUploaderDropzone"],
+    [data-baseweb="file-uploader"],
+    [data-testid="stFileUploader"] section > div {
+        background-color: #1e293b !important;
+        background: #1e293b !important;
+        border: 1px dashed rgba(56, 189, 248, 0.4) !important;
+        border-radius: 12px !important;
     }
-    [data-testid="stFileUploader"] section * {
+    [data-testid="stFileUploader"] section *,
+    [data-testid="stFileUploaderDropzone"] * {
         color: #cbd5e1 !important;
     }
+    [data-testid="stFileUploader"] button,
+    [data-testid="stFileUploaderDropzone"] button {
+        background-color: #334155 !important;
+        background: #334155 !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    }
 
-    /* 主要按鈕電競流光風格 */
-    .stButton > button {
+    /* 按鈕樣式（含次要按鈕：要求補件、駁回申請，徹底杜絕白底反白） */
+    .stButton > button,
+    div[data-testid="stButton"] > button,
+    button[data-testid="baseButton-secondary"],
+    button[kind="secondary"] {
+        background-color: #1e293b !important;
+        background: #1e293b !important;
         border-radius: 10px !important;
         font-weight: 600 !important;
         transition: all 0.2s ease !important;
-        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border: 1px solid rgba(255, 255, 255, 0.22) !important;
         color: #ffffff !important;
     }
-    .stButton > button[kind="primary"] {
+    .stButton > button:hover,
+    div[data-testid="stButton"] > button:hover,
+    button[data-testid="baseButton-secondary"]:hover,
+    button[kind="secondary"]:hover {
+        background-color: #334155 !important;
+        background: #334155 !important;
+        border-color: #38bdf8 !important;
+        color: #38bdf8 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25) !important;
+    }
+    .stButton > button[kind="primary"],
+    button[data-testid="baseButton-primary"] {
         background: linear-gradient(135deg, #2563eb 0%, #6366f1 100%) !important;
+        background-color: #2563eb !important;
         border: none !important;
         box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4) !important;
         color: #ffffff !important;
     }
-    .stButton > button[kind="primary"]:hover {
+    .stButton > button[kind="primary"]:hover,
+    button[data-testid="baseButton-primary"]:hover {
         transform: translateY(-2px) !important;
         box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6) !important;
     }
@@ -388,22 +449,40 @@ CUSTOM_CSS = """
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
 
-    /* 對話彈出視窗 (Modal Dialog) 科技深色高質感樣式與純白字 */
-    div[role="dialog"], [data-testid="stDialog"] {
+    /* 對話彈出視窗 (Modal Dialog) - 徹底覆蓋 BaseWeb Modal 所有內層 div 杜絕白底 */
+    div[role="dialog"],
+    div[role="dialog"] > div,
+    div[data-baseweb="modal"],
+    div[data-baseweb="modal"] > div,
+    div[data-baseweb="modal"] [role="dialog"],
+    div[data-baseweb="modal"] [role="dialog"] > div,
+    [data-testid="stDialog"],
+    [data-testid="stDialog"] > div,
+    [data-testid="stModal"],
+    [data-testid="stModal"] > div {
         background-color: #0b1120 !important;
-        border: 1px solid rgba(56, 189, 248, 0.45) !important;
-        border-radius: 16px !important;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8) !important;
+        background: #0b1120 !important;
         color: #f8fafc !important;
     }
-    div[role="dialog"] h2, div[role="dialog"] h3, div[role="dialog"] h4,
-    div[role="dialog"] p, div[role="dialog"] span, div[role="dialog"] label,
+    div[role="dialog"] {
+        border: 1px solid rgba(56, 189, 248, 0.5) !important;
+        border-radius: 16px !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9) !important;
+    }
+    div[role="dialog"] *,
     [data-testid="stDialog"] * {
         color: #f8fafc !important;
     }
     div[role="dialog"] .stCheckbox label span {
         color: #f1f5f9 !important;
         font-weight: 500 !important;
+    }
+    div[role="dialog"] textarea,
+    div[role="dialog"] input {
+        background-color: #1e293b !important;
+        background: #1e293b !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
     }
 </style>
 """
