@@ -596,7 +596,8 @@ PERIPHERAL_CATEGORIES = [
 # ==========================================
 # 0.1 郵件設定持久化核心 (email_config.json)
 # ==========================================
-CONFIG_FILE = "email_config.json"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_FILE = os.path.join(BASE_DIR, "email_config.json")
 
 def load_email_config():
     """讀取本地持久化之郵件設定，防止網頁刷新後密碼遺失"""
@@ -633,7 +634,7 @@ SENDER_EMAIL = email_cfg.get("sender_email", "zhuant610@gmail.com")
 # ==========================================
 # 1. 資料庫初始化與資料遷移 (SQLite)
 # ==========================================
-DB_FILE = "disputes.db"
+DB_FILE = os.path.join(BASE_DIR, "disputes.db")
 
 def init_db():
     conn = sqlite3.connect(DB_FILE)
@@ -1087,12 +1088,16 @@ if menu == "🧑‍💼 店長：人機對照審核台":
 
     st.markdown("---")
 
-    # 雙維度篩選器 (處理狀態 + 周邊類別)
-    filter_col1, filter_col2 = st.columns(2)
+    # 雙維度篩選器 (處理狀態 + 周邊類別) + 即時刷新按鈕
+    filter_col1, filter_col2, filter_col3 = st.columns([2, 2, 1])
     with filter_col1:
         filter_status = st.selectbox("📌 篩選處理狀態", ["全部", "待審核", "已通過", "已駁回", "需補件"], index=1)
     with filter_col2:
         filter_cat = st.selectbox("🎯 篩選周邊品類", ["全部周邊"] + PERIPHERAL_CATEGORIES, index=0)
+    with filter_col3:
+        st.markdown("<div style='margin-top:28px;'></div>", unsafe_allow_html=True)
+        if st.button("🔄 刷新最新案件", use_container_width=True, help="點擊即時重新讀取資料庫，載入買家最新提交的申請"):
+            st.rerun()
 
     filtered_df = df.copy()
     if filter_status != "全部":
