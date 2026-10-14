@@ -422,7 +422,8 @@ PERIPHERAL_CATEGORIES = [
 # ==========================================
 # 1. 資料庫連線與初始化 (SQLite: disputes.db)
 # ==========================================
-DB_FILE = "disputes.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_FILE = os.path.join(BASE_DIR, "disputes.db")
 
 def init_db():
     conn = sqlite3.connect(DB_FILE)
@@ -448,9 +449,17 @@ def init_db():
         )
     """)
     conn.commit()
+
+    # 自動檢查並為現有資料庫新增 customer_email 欄位
+    try:
+        c.execute("ALTER TABLE return_requests ADD COLUMN customer_email TEXT DEFAULT ''")
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass
+
     # 自動同步遷移周邊類別名稱為標準格式
     c.execute("UPDATE return_requests SET product_category = '🎧 耳機' WHERE product_category LIKE '%耳機%'")
-    c.execute("UPDATE return_requests SET product_category = '⌨️ 機械/薄膜鍵盤' WHERE product_category LIKE '%鍵盤%'")
+    c.execute("UPDATE return_requests SET product_category = '⌨️ 機械/薄膜鍵盤' WHERE product_category LIKE '%鍵盤%' OR product_category LIKE '%平板%'")
     c.execute("UPDATE return_requests SET product_category = '🖱️ 滑鼠' WHERE product_category LIKE '%滑鼠%'")
     conn.commit()
     conn.close()
@@ -636,20 +645,23 @@ if buyer_menu == "📝 提交退換貨申請":
                 )
 
                 # 寫入 SQLite (disputes.db)
-                conn = sqlite3.connect(DB_FILE)
-                c = conn.cursor()
-                now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                c.execute("""
-                    INSERT INTO return_requests 
-                    (order_id, customer_email, product_category, product_name, customer_reason, image_data, status, risk_level, risk_score, ai_verdict, ai_evidence, ai_recommendation, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, '待審核', ?, ?, ?, ?, ?, ?)
-                """, (order_id, customer_email.strip(), category, product_name, reason, img_bytes, risk_lvl, risk_score, verdict, evidence, rec, now_str))
-                conn.commit()
-                conn.close()
+                try:
+                    conn = sqlite3.connect(DB_FILE)
+                    c = conn.cursor()
+                    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    c.execute("""
+                        INSERT INTO return_requests 
+                        (order_id, customer_email, product_category, product_name, customer_reason, image_data, status, risk_level, risk_score, ai_verdict, ai_evidence, ai_recommendation, created_at)
+                        VALUES (?, ?, ?, ?, ?, ?, '待審核', ?, ?, ?, ?, ?, ?)
+                    """, (order_id, customer_email.strip(), category, product_name, reason, img_bytes, risk_lvl, risk_score, verdict, evidence, rec, now_str))
+                    conn.commit()
+                    conn.close()
 
-            st.success(f"🎉 退換貨申請已成功提交！您的案件編號為 **`{order_id}`**。")
-            st.info(f"📧 審核結果將寄發至您的電子信箱：**`{customer_email.strip()}`**。您亦可隨時在左側「🔍 查詢申請進度」輸入訂單編號追蹤審核狀態。")
-            st.balloons()
+                    st.success(f"🎉 退換貨申請已成功提交！您的案件編號為 **`{order_id}`**。")
+                    st.info(f"📧 審核結果將寄發至您的電子信箱：**`{customer_email.strip()}`**。您亦可隨時在左側「🔍 查詢申請進度」輸入訂單編號追蹤審核狀態。")
+                    st.balloons()
+                except Exception as e:
+                    st.error(f"❌ 申訴資料寫入資料庫失敗：{str(e)}。請聯繫系統管理員確認後台連線。")
 
 # ==========================================
 # 頁面二：查詢申請進度 / 補充照片
