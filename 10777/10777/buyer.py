@@ -203,6 +203,91 @@ CUSTOM_CSS = """
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
     }
 
+    /* 下拉選單本體與彈出選單（Selectbox & Popover）全面深色杜絕反白 */
+    div[data-baseweb="select"],
+    div[data-baseweb="select"] > div,
+    [data-testid="stSelectbox"] > div > div {
+        background-color: #1e293b !important;
+        background: #1e293b !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 8px !important;
+        color: #ffffff !important;
+    }
+    div[data-baseweb="select"] *,
+    [data-testid="stSelectbox"] * {
+        color: #ffffff !important;
+    }
+    div[data-baseweb="select"] svg {
+        fill: #38bdf8 !important;
+    }
+
+    [data-baseweb="popover"],
+    [data-baseweb="popover"] > div,
+    [data-baseweb="popover"] ul,
+    [data-baseweb="menu"],
+    div[data-baseweb="menu"],
+    ul[role="listbox"],
+    div[role="listbox"] {
+        background-color: #0f172a !important;
+        background: #0f172a !important;
+        border: 1px solid rgba(56, 189, 248, 0.4) !important;
+        border-radius: 10px !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85) !important;
+    }
+    [data-baseweb="popover"] li,
+    [data-baseweb="popover"] li *,
+    li[role="option"],
+    li[role="option"] * {
+        background-color: transparent !important;
+        background: transparent !important;
+        color: #f8fafc !important;
+    }
+    [data-baseweb="popover"] li:hover,
+    li[role="option"]:hover,
+    li[role="option"][aria-selected="true"] {
+        background-color: #1e293b !important;
+        background: #1e293b !important;
+        color: #38bdf8 !important;
+    }
+
+    /* 圖表與資料表格浮動工具列 (stElementToolbar) 徹底深色化 */
+    [data-testid="stElementToolbar"],
+    div[data-testid="stElementToolbar"],
+    .stElementToolbar {
+        background-color: #0f172a !important;
+        background: #0f172a !important;
+        border: 1px solid rgba(56, 189, 248, 0.45) !important;
+        border-radius: 9999px !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.75) !important;
+        color: #f1f5f9 !important;
+    }
+    [data-testid="stElementToolbar"] button,
+    div[data-testid="stElementToolbar"] button,
+    [data-testid="stElementToolbarButton"],
+    button[data-testid="stElementToolbarButton"] {
+        background-color: transparent !important;
+        background: transparent !important;
+        border: none !important;
+        color: #f1f5f9 !important;
+        border-radius: 9999px !important;
+    }
+    [data-testid="stElementToolbar"] button:hover,
+    div[data-testid="stElementToolbar"] button:hover,
+    [data-testid="stElementToolbarButton"]:hover,
+    button[data-testid="stElementToolbarButton"]:hover {
+        background-color: #1e293b !important;
+        background: #1e293b !important;
+        color: #38bdf8 !important;
+    }
+    [data-testid="stElementToolbar"] svg,
+    div[data-testid="stElementToolbar"] svg,
+    [data-testid="stElementToolbarButton"] svg,
+    button[data-testid="stElementToolbarButton"] svg {
+        fill: #f1f5f9 !important;
+        stroke: #f1f5f9 !important;
+        color: #f1f5f9 !important;
+    }
+
     /* 側邊欄樣式 */
     section[data-testid="stSidebar"] {
         background-color: rgba(10, 15, 29, 0.95) !important;
@@ -330,8 +415,8 @@ st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 # 電腦周邊受檢類別清單
 PERIPHERAL_CATEGORIES = [
     "⌨️ 機械/薄膜鍵盤",
-    "🖱️ 辦公滑鼠",
-    "🎧 降噪耳機"
+    "🖱️ 滑鼠",
+    "🎧 耳機"
 ]
 
 # ==========================================
@@ -363,6 +448,11 @@ def init_db():
         )
     """)
     conn.commit()
+    # 自動同步遷移周邊類別名稱為標準格式
+    c.execute("UPDATE return_requests SET product_category = '🎧 耳機' WHERE product_category LIKE '%耳機%'")
+    c.execute("UPDATE return_requests SET product_category = '⌨️ 機械/薄膜鍵盤' WHERE product_category LIKE '%鍵盤%'")
+    c.execute("UPDATE return_requests SET product_category = '🖱️ 滑鼠' WHERE product_category LIKE '%滑鼠%'")
+    conn.commit()
     conn.close()
 
 init_db()
@@ -381,7 +471,7 @@ def analyze_return_request(category, product_name, reason, image_file, api_key="
             from google import genai
             client = genai.Client(api_key=api_key)
             prompt = f"""
-            你是一位專精於「電腦周邊（機械/薄膜鍵盤、辦公滑鼠、降噪耳機）」售後退換貨與爭議防詐風控的資深專家。
+            你是一位專精於「電腦周邊（機械/薄膜鍵盤、滑鼠、耳機）」售後退換貨與爭議防詐風控的資深專家。
             檢測範圍嚴格限定於電腦周邊三大品類：鍵盤、滑鼠、耳機。
             
             請根據買家提供的退貨資訊進行嚴謹審查：
@@ -458,8 +548,8 @@ buyer_menu = st.sidebar.radio(
 st.sidebar.info("""
 **🎯 受理電腦周邊範圍：**
 - ⌨️ **機械/薄膜鍵盤** (軸體/鍵位/PCB)
-- 🖱️ **辦公滑鼠** (微動/編碼器/感應器)
-- 🎧 **降噪耳機** (單元/頭樑/收音)
+- 🖱️ **滑鼠** (微動/編碼器/感應器)
+- 🎧 **耳機** (單元/頭樑/收音)
 
 **📋 買家售後須知：**
 1. 購買 7 日內商品享新品不良免費換新/退款服務。
