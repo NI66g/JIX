@@ -92,20 +92,100 @@ CUSTOM_CSS = """
         line-height: 1.5 !important;
     }
 
-    /* 輸入表單本體 */
+    /* 輸入表單本體（打字文字白色、深黑科技背景、全面覆蓋 BaseWeb 杜絕反白） */
+    .stTextInput input,
+    .stTextArea textarea,
+    [data-testid="stTextInput"] input,
+    [data-testid="stTextArea"] textarea,
+    [data-baseweb="input"] input,
+    [data-baseweb="base-input"] input,
+    [data-baseweb="textarea"] textarea,
+    [data-baseweb="input"],
+    [data-baseweb="textarea"],
+    [data-baseweb="base-input"],
     .stTextInput > div > div > input, 
     .stTextArea > div > div > textarea,
     .stSelectbox > div > div > div {
-        background-color: rgba(15, 23, 42, 0.8) !important;
-        border: 1px solid rgba(255, 255, 255, 0.18) !important;
+        background-color: #1e293b !important;
+        background: #1e293b !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 8px !important;
         color: #ffffff !important;
         font-size: 14.5px !important;
     }
-    .stTextInput > div > div > input:focus, 
-    .stTextArea > div > div > textarea:focus {
+    .stTextInput input:focus, 
+    .stTextArea textarea:focus,
+    [data-testid="stTextInput"] input:focus,
+    [data-testid="stTextArea"] textarea:focus {
         border-color: #38bdf8 !important;
         box-shadow: 0 0 14px rgba(56, 189, 248, 0.4) !important;
+    }
+
+    /* 檔案上傳器拖曳區文字與按鈕亮色，全面杜絕白底 */
+    [data-testid="stFileUploader"],
+    [data-testid="stFileUploader"] section,
+    [data-testid="stFileUploaderDropzone"],
+    div[data-testid="stFileUploaderDropzone"],
+    [data-baseweb="file-uploader"],
+    [data-testid="stFileUploader"] section > div {
+        background-color: #1e293b !important;
+        background: #1e293b !important;
+        border: 1px dashed rgba(56, 189, 248, 0.4) !important;
+        border-radius: 12px !important;
+    }
+    [data-testid="stFileUploader"] section *,
+    [data-testid="stFileUploaderDropzone"] * {
+        color: #cbd5e1 !important;
+    }
+    [data-testid="stFileUploader"] button,
+    [data-testid="stFileUploaderDropzone"] button {
+        background-color: #334155 !important;
+        background: #334155 !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    }
+
+    /* 摺疊面板 (stExpander) 徹底杜絕反白變白條 */
+    [data-testid="stExpander"],
+    [data-testid="stExpander"] details {
+        background-color: rgba(15, 23, 42, 0.85) !important;
+        background: rgba(15, 23, 42, 0.85) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+        margin-bottom: 14px !important;
+        overflow: hidden !important;
+    }
+    [data-testid="stExpander"] summary,
+    [data-testid="stExpander"] details summary,
+    .streamlit-expanderHeader {
+        background-color: #1e293b !important;
+        background: #1e293b !important;
+        border-radius: 10px !important;
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        transition: all 0.2s ease !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+    [data-testid="stExpander"] summary:hover,
+    [data-testid="stExpander"] details summary:hover,
+    .streamlit-expanderHeader:hover {
+        background-color: #334155 !important;
+        background: #334155 !important;
+        color: #38bdf8 !important;
+    }
+    [data-testid="stExpander"] summary *,
+    [data-testid="stExpander"] details summary *,
+    .streamlit-expanderHeader *,
+    [data-testid="stExpander"] p,
+    [data-testid="stExpander"] span,
+    [data-testid="stExpander"] div {
+        color: #f1f5f9 !important;
+    }
+    [data-testid="stExpander"] [data-testid="stExpanderDetails"] {
+        background-color: rgba(15, 23, 42, 0.95) !important;
+        background: rgba(15, 23, 42, 0.95) !important;
+        color: #f1f5f9 !important;
     }
 
     /* 提示框純白字體 */
@@ -161,21 +241,40 @@ CUSTOM_CSS = """
         color: #c7d2fe !important;
     }
 
-    /* 按鈕樣式 */
-    .stButton > button {
+    /* 按鈕樣式（含次要按鈕，徹底杜絕白底反白） */
+    .stButton > button,
+    div[data-testid="stButton"] > button,
+    button[data-testid="baseButton-secondary"],
+    button[kind="secondary"] {
+        background-color: #1e293b !important;
+        background: #1e293b !important;
         border-radius: 10px !important;
         font-weight: 600 !important;
         transition: all 0.2s ease !important;
-        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border: 1px solid rgba(255, 255, 255, 0.22) !important;
         color: #ffffff !important;
     }
-    .stButton > button[kind="primary"] {
+    .stButton > button:hover,
+    div[data-testid="stButton"] > button:hover,
+    button[data-testid="baseButton-secondary"]:hover,
+    button[kind="secondary"]:hover {
+        background-color: #334155 !important;
+        background: #334155 !important;
+        border-color: #38bdf8 !important;
+        color: #38bdf8 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25) !important;
+    }
+    .stButton > button[kind="primary"],
+    button[data-testid="baseButton-primary"] {
         background: linear-gradient(135deg, #2563eb 0%, #6366f1 100%) !important;
+        background-color: #2563eb !important;
         border: none !important;
         box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4) !important;
         color: #ffffff !important;
     }
-    .stButton > button[kind="primary"]:hover {
+    .stButton > button[kind="primary"]:hover,
+    button[data-testid="baseButton-primary"]:hover {
         transform: translateY(-2px) !important;
         box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6) !important;
     }
